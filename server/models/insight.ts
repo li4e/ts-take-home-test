@@ -8,3 +8,6 @@ export const Insight = z.object({
 });
 
 export type Insight = z.infer<typeof Insight>;
+
+export type InsightDTO = Omit<Insight, "createdAt"> & { createdAt: string };
+export type InsightCreateDTO = Omit<Insight, "createdAt" | "id">;

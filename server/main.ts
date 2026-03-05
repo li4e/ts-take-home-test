@@ -5,6 +5,9 @@ import * as path from "@std/path";
 import { Port } from "../lib/utils/index.ts";
 import listInsights from "./operations/list-insights.ts";
 import lookupInsight from "./operations/lookup-insight.ts";
+import createInsight from "./operations/create-insight.ts";
+import deleteInsight from "./operations/delete-insight.ts";
+import type { InsightCreateDTO } from "$models/insight.ts";
 
 console.log("Loading configuration");
 
@@ -31,7 +34,7 @@ router.get("/_health", (ctx) => {
 router.get("/insights", (ctx) => {
   const result = listInsights({ db });
   ctx.response.body = result;
-  ctx.response.body = 200;
+  ctx.response.status = 200;
 });
 
 router.get("/insights/:id", (ctx) => {
@@ -41,12 +44,20 @@ router.get("/insights/:id", (ctx) => {
   ctx.response.status = 200;
 });
 
-router.get("/insights/create", (ctx) => {
-  // TODO
+router.put("/insights", async (ctx) => {
+  const data = await ctx.request.body.json() as InsightCreateDTO;
+  const result = createInsight({
+    db,
+    data,
+  });
+  ctx.response.body = result;
+  ctx.response.status = 201;
 });
 
-router.get("/insights/delete", (ctx) => {
-  // TODO
+router.delete("/insights/:id", (ctx) => {
+  const params = ctx.params as Record<string, any>;
+  deleteInsight({ db, id: Number(params.id) });
+  ctx.response.status = 204;
 });
 
 const app = new oak.Application();
